@@ -1,20 +1,26 @@
 import { useState, useContext, useEffect, createContext } from "react";
 import Axios from "axios";
+import { useRouter } from "next/router";
 
 const AppContext = createContext({
   username: null,
   email: null,
+  id: null,
   login: () => {},
   logout: () => {},
   loading: true,
 });
 
 const AppProvider = ({ children }) => {
+  const { pathname } = useRouter();
+  const postRoutes = "/posts";
+  const subsRoutes = "/subs";
   const [isLoggedIn, setIsLoggedIn] = useState({
     loading: true,
     loggedIn: false,
     email: null,
     username: null,
+    id: null,
   });
 
   const [email, setEmail] = useState("");
@@ -39,7 +45,7 @@ const AppProvider = ({ children }) => {
           },
         });
         const user = response.data;
-        console.log("user:", user);
+        // console.log("user:", user);
         try {
           setIsLoggedIn({
             ...isLoggedIn,
@@ -47,6 +53,7 @@ const AppProvider = ({ children }) => {
             email: user.email,
             username: user.username,
             loading: false,
+            id: user.id,
           });
           setEmail(...email, user.email);
         } catch (error) {
@@ -82,6 +89,8 @@ const AppProvider = ({ children }) => {
         setError,
         isLoggedIn,
         setIsLoggedIn,
+        postRoutes,
+        subsRoutes,
       }}
     >
       {children}

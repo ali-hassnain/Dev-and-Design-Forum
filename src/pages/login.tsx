@@ -17,9 +17,12 @@ export default function Login() {
     setAgree,
     error,
     setError,
+    isLoggedIn,
   } = useGlobalContext();
 
   const router = useRouter();
+
+  if (isLoggedIn.loggedIn) router.push("/");
 
   const submitForm = async (e) => {
     e.preventDefault();

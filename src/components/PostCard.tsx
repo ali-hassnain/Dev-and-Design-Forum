@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Fragment } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import classNames from "classnames";
+import ActionButton from "./ActionButton";
 
 dayjs.extend(relativeTime);
 
@@ -10,22 +10,14 @@ interface PostCardProps {
   post: Post;
 }
 
-const ActionButton = ({ children }) => {
-  return (
-    <div className="px-1 py-1 mr-1 text-xs rounded cursor-pointer text-gay-400 hover:bg-gray-200">
-      {children}
-    </div>
-  );
-};
-
 export default function PostCard({
   post: {
     identifier,
     title,
     slug,
     subName,
-    createdAt,
-    updatedAt,
+    created_at,
+    updated_at,
     body,
     username,
     url,
@@ -60,14 +52,15 @@ export default function PostCard({
       <div className="w-full p-2">
         <div className="flex items-center">
           <Link href={`/r/${subName}`}>
-            <Fragment>
-              <img
-                src="#"
-                className="w-6 h-6 mr-1 rounded-full cursor-pointer"
-              ></img>
-              <a className="text-xs font-bold hover:underline ">/r/{subName}</a>
-            </Fragment>
+            <img
+              src="#"
+              className="w-6 h-6 mr-1 rounded-full cursor-pointer"
+            ></img>
           </Link>
+          <Link href={`/r/${subName}`}>
+            <a className="text-xs font-bold hover:underline ">/r/{subName}</a>
+          </Link>
+
           <p className="text-xs text-gray-500">
             <span className="mx-1">•</span> Posted by
             <Link href={`/u/${username}`}>
@@ -75,13 +68,13 @@ export default function PostCard({
             </Link>
             <Link href={`/r/${subName}/${identifier}/${slug}`}>
               <a className="mx-1 hover:underline">
-                {dayjs(createdAt).fromNow()}
+                {dayjs(created_at).fromNow()}
               </a>
             </Link>
           </p>
         </div>
-        <Link href={url}>
-          <a className="my-1 text-lg font-medium">{title}</a>
+        <Link href={`/r/${subName}/${identifier}/${slug}`}>
+          <div className="my-1 text-lg font-medium cursor-pointer">{title}</div>
         </Link>
         {body && <p className="my-1 text-sm">{body}</p>}
         <div className="flex">

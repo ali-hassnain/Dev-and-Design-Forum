@@ -1,22 +1,28 @@
 import Link from "next/link";
 import { useGlobalContext } from "./Context";
-import { useEffect } from "react";
+// import { useRouter } from "next/router";
 
 const Navbar: React.FC = () => {
-  const { isLoggedIn } = useGlobalContext();
-
+  // const router = useRouter();
+  const { isLoggedIn, setEmail } = useGlobalContext();
+  const logout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+    // router.push("/login");
+  };
   return (
     <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-center h-12 px-5 bg-white ">
       <div className="flex item-center">
         <Link href="/">
-          <img
-            className="w-8 h-8 mr-2"
-            src="https://images.pexels.com/photos/9697460/pexels-photo-9697460.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+          {/* <img
+            className="w-8 h-8 mr-2 cursor-pointer"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Eo_circle_blue_letter-d.svg/512px-Eo_circle_blue_letter-d.svg.png"
             // src="Frontend/dev-and-design/src/images/dev-des logo.png"
             alt="Dev and Design forum"
-          ></img>
+          ></img> */}
+          <i className="w-4 h-4 py-1 mr-4 leading-6 text-blue-500 cursor-pointer stroke-current fas fa-code"></i>
         </Link>
-        <span className="text-2xl font-semibold ">
+        <span className="text-2xl font-semibold text-blue-500 ">
           <Link href="/">Dev & Design Forum</Link>
         </span>
       </div>
@@ -32,7 +38,7 @@ const Navbar: React.FC = () => {
         {!isLoggedIn.loading &&
           (isLoggedIn.loggedIn ? (
             <button
-              onClick={console.log(localStorage.removeItem("token"))}
+              onClick={logout}
               className="w-32 py-1 mr-4 leading-5 hollow blue button"
             >
               Log out
