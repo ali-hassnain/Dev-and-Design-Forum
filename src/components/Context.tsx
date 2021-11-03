@@ -13,8 +13,9 @@ const AppContext = createContext({
 
 const AppProvider = ({ children }) => {
   const { pathname } = useRouter();
-  const postRoutes = "/posts";
-  const subsRoutes = "/subs";
+  // const postRoutes = "/posts";
+  // const subsRoutes = "/subs";
+  const [search, setSearch] = useState({ query: null, category: null });
   const [isLoggedIn, setIsLoggedIn] = useState({
     loading: true,
     loggedIn: false,
@@ -34,6 +35,18 @@ const AppProvider = ({ children }) => {
     agreement: null,
     alreadyUser: null,
   });
+
+  const HandleSearchInput = (e) => {
+    const query = e.target.value;
+    setSearch({ ...search, query });
+    console.log(query);
+  };
+
+  const HandleSearchSubmit = (e) => {
+    e.preventDefault();
+    const searchURL = `/posts?query=${search.query}`;
+    window.location.href = searchURL;
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -89,8 +102,10 @@ const AppProvider = ({ children }) => {
         setError,
         isLoggedIn,
         setIsLoggedIn,
-        postRoutes,
-        subsRoutes,
+        search,
+        setSearch,
+        HandleSearchInput,
+        HandleSearchSubmit,
       }}
     >
       {children}
