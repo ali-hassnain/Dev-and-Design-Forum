@@ -7,6 +7,7 @@ import { createRef, Fragment, useState, useEffect, ChangeEvent } from "react";
 import { useGlobalContext } from "../../components/Context";
 import classNames from "classnames";
 import Axios from "axios";
+import dayjs from "dayjs";
 
 export default function Sub() {
   const { isLoggedIn } = useGlobalContext();
@@ -41,7 +42,7 @@ export default function Sub() {
   const { data: postOwner } = useSWR(
     `http://localhost:1337/subs?user.username=${subName}`
   );
-  // console.log("postOwner:", postOwner[0].posts);
+  console.log("postOwner:", postOwner);
 
   const {
     data: userPost,
@@ -75,9 +76,11 @@ export default function Sub() {
   // }
   useEffect(() => {
     if (!userPost) return;
-    setOwnSub(
-      isLoggedIn.loggedIn && isLoggedIn.username === userPost[0].user.username
-    );
+    if (userPost && userPost[0] && userPost[0].user) {
+      setOwnSub(
+        isLoggedIn.loggedIn && isLoggedIn.username === userPost[0].user.username
+      );
+    }
   }, [userPost]);
 
   return (
@@ -103,7 +106,10 @@ export default function Sub() {
           {/* Banner image */}
 
           <div className="bg-blue-500 ">
-            {postOwner && postOwner[0] ? (
+            {postOwner &&
+            postOwner[0] &&
+            postOwner[0].bannerUrn &&
+            postOwner[0].bannerUrn[0] ? (
               <div
                 className={classNames("h-56 bg-blue-500 ", {
                   "cursor-pointer": ownSub,
@@ -127,7 +133,10 @@ export default function Sub() {
           <div className="h-20 bg-white">
             <div className="container relative flex">
               <div className="absolute" style={{ top: -10 }}>
-                {postOwner && postOwner[0] ? (
+                {postOwner &&
+                postOwner[0] &&
+                postOwner[0].ImageUrn &&
+                postOwner[0].ImageUrn[0] ? (
                   <Image
                     src={`http://localhost:1337${postOwner[0].ImageUrn[0].url}`}
                     alt={""}
@@ -168,16 +177,57 @@ export default function Sub() {
           {/* sub-meta data */}
         </div>
       </Fragment>
-
-      <div className="container pt-5">
+      <div className="flex ">
         <div className="container pt-5">
-          {postOwner && postOwner[0] && postOwner[0].posts ? (
-            postOwner[0].posts?.map((post) => (
-              <div>{<PostCard post={post} key={post.identifier} />}</div>
-            ))
-          ) : (
-            <h1 className="text-center text-lg-bold">No posts yet to show</h1>
-          )}
+          <div className="container pt-5 ">
+            {postOwner && postOwner[0] && postOwner[0].posts ? (
+              postOwner[0].posts?.map((post) => (
+                <div className="w-full px-4 md:w-200 md:p-0">
+                  {<PostCard post={post} key={post.identifier} />}
+                </div>
+              ))
+            ) : (
+              <h1 className="text-center text-lg-bold">No posts yet to show</h1>
+            )}
+          </div>
+        </div>
+        <div className="hidden pt-10 ml-6 mr-12 md:block w-80">
+          <div className="bg-white rounded ">
+            <div className="justify-center p-3 bg-blue-500 rounded-t ">
+              {postOwner &&
+              postOwner[0] &&
+              postOwner[0].ImageUrn &&
+              postOwner[0].ImageUrn[0] ? (
+                <Image
+                  src={`http://localhost:1337${postOwner[0].ImageUrn[0].url}`}
+                  alt={""}
+                  className="w-16 h-16 mx-auto overflow-hidden border-2 border-white rounded-full "
+                  onClick={() => openFileInput("image")}
+                  width={87}
+                  height={87}
+                />
+              ) : (
+                <div>
+                  <img
+                    className="w-16 h-16 mx-auto overflow-hidden border-2 border-white rounded-full"
+                    src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                  ></img>
+                </div>
+              )}
+            </div>
+            <div className="p-3 text-center">
+              <h1 className="mb-3 text-xl font-bold ">
+                {postOwner && postOwner[0] ? postOwner[0].title : "User"}
+              </h1>
+              <hr />
+              <p className="my-3">
+                Joined{" "}
+                {postOwner && postOwner[0] && postOwner[0].user
+                  ? dayjs(postOwner[0].user.created_at).format("MMM YYYY")
+                  : ""}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

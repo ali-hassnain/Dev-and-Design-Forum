@@ -4,6 +4,7 @@ import Axios from "axios";
 import { useRouter } from "next/router";
 import InputGroup from "../components/InputGroup";
 import { useGlobalContext } from "../components/Context";
+import { getSession, signIn, signOut } from "next-auth/client";
 
 export default function Login() {
   const {
@@ -110,6 +111,20 @@ export default function Login() {
             </Link>
           </small>
         </div>
+        {/* Google sign in button */}
+
+        {/* <div>
+          <Link href="/api/auth/Signin">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                signIn();
+              }}
+            >
+              Sign In
+            </button>
+          </Link>
+        </div> */}
       </div>
     </div>
   );

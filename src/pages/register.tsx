@@ -19,6 +19,7 @@ export default function Home() {
     error,
     setError,
     isLoggedIn,
+    setIsLoggedIn,
   } = useGlobalContext();
 
   const router = useRouter();
@@ -76,21 +77,47 @@ export default function Home() {
           username,
         }
       );
-      router.push("/login");
-      console.log(res.data);
-    } catch (err) {
-      console.log(
-        "strapi error:",
-        err.response.data.message[0].messages[0].message
-      );
-      setError({
-        ...error,
-        alreadyUser: err.response.data.message[0].messages[0].message,
-        email: null,
-        password: null,
-        username: null,
-        agreement: null,
+      console.log("res:", res);
+      // const newUserId = res.data.user.id;
+      setIsLoggedIn({ ...isLoggedIn, id: res.data.user.id });
+      console.log("USER ID:", isLoggedIn.id);
+      // if (res) {
+      const { data: sub } = await Axios.post("http://localhost:1337/subs", {
+        title: username,
+        user: isLoggedIn.id,
       });
+      console.log("register sub:", sub);
+      // }
+      router.push("/login");
+      console.log(
+        "res.data:Auth.form.error.username.taken",
+        Auth.form.error.email.taken
+      );
+    } catch (err) {
+      // console.log(
+      //   "strapi error:",
+      //   err.response.data.message[0].messages[0].message,
+      //   err.response
+      // );
+      if (
+        err &&
+        err.response &&
+        err.response.data &&
+        err.response.data.message &&
+        // err.response.message[0] &&
+        err.response.data.message[0].messages &&
+        err.response.data.message[0].messages[0] &&
+        err.response.data.message[0].messages[0].message
+      ) {
+        setError({
+          ...error,
+          alreadyUser: err.response.data.message[0].messages[0].message,
+          email: null,
+          password: null,
+          username: null,
+          agreement: null,
+        });
+      }
     }
   };
 

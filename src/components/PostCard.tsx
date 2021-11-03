@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import classNames from "classnames";
 import ActionButton from "./ActionButton";
+import useSWR from "swr";
 
 dayjs.extend(relativeTime);
 
@@ -17,7 +18,6 @@ export default function PostCard({
     slug,
     subName,
     created_at,
-    updated_at,
     body,
     username,
     url,
@@ -26,8 +26,21 @@ export default function PostCard({
     userVote,
   },
 }: PostCardProps) {
+  const { data: image } = useSWR(
+    `http://localhost:1337/subs/?posts.identifier=${identifier}`
+  );
+  let imageUrl;
+  if (image && image[0] && image[0].ImageUrn && image[0].ImageUrn[0]) {
+    imageUrl = image[0].ImageUrn[0].url;
+  }
+  // console.log("imageUrl:", imageUrl);
+  // console.log("image:", image);
   return (
-    <div key={identifier} className="flex mb-4 bg-white rounded ">
+    <div
+      key={identifier}
+      id={identifier}
+      className="flex mb-4 bg-white rounded "
+    >
       {/* Vote Section */}
       <div className="w-10 py-3 text-center bg-gray-200 rounded-l ">
         {/* upvote */}
@@ -52,19 +65,26 @@ export default function PostCard({
       <div className="w-full p-2">
         <div className="flex items-center">
           <Link href={`/r/${subName}`}>
-            <img
-              src="#"
-              className="w-6 h-6 mr-1 rounded-full cursor-pointer"
-            ></img>
+            {imageUrl ? (
+              <img
+                src={`http://localhost:1337${imageUrl}`}
+                className="w-8 h-8 mr-1 rounded-full cursor-pointer"
+              ></img>
+            ) : (
+              <img
+                src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                className="w-8 h-8 mr-1 rounded-full cursor-pointer"
+              ></img>
+            )}
           </Link>
           <Link href={`/r/${subName}`}>
-            <a className="text-xs font-bold hover:underline ">/r/{subName}</a>
+            <a className="text-xs font-bold hover:underline ">{subName}</a>
           </Link>
 
           <p className="text-xs text-gray-500">
             <span className="mx-1">•</span> Posted by
-            <Link href={`/u/${username}`}>
-              <a className="mx-1 hover:underline">/u/{username}</a>
+            <Link href={`/r/${subName}`}>
+              <a className="mx-1 hover:underline">{subName}</a>
             </Link>
             <Link href={`/r/${subName}/${identifier}/${slug}`}>
               <a className="mx-1 hover:underline">
@@ -78,7 +98,7 @@ export default function PostCard({
         </Link>
         {body && <p className="my-1 text-sm">{body}</p>}
         <div className="flex">
-          <Link href={url}>
+          <Link href={`/r/${subName}/${identifier}/${slug}`}>
             <a>
               <ActionButton>
                 <i className="mr-1 fas fa-comment-alt fa-xs"></i>

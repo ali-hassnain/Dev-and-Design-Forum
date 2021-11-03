@@ -38,6 +38,7 @@ function PostPage({
       ? `http://localhost:1337/posts/?identifier=${identifier}&slug=${slug}`
       : null
   );
+  console.log("post:", post);
   const { data: comments, revalidate } = useSWR(
     identifier
       ? `http://localhost:1337/comments/?post.identifier=${identifier}`
@@ -80,39 +81,43 @@ function PostPage({
           {post && post[0] ? post[0]?.title : <>Dev and Design Forum</>}
         </title>
       </Head>
-      <Link href="/">
-        <a>
-          <div className="flex items-center w-full h-20 p-8 bg-blue-500">
-            <div className="container flex">
-              {post &&
-              post[0] &&
-              post[0].sub &&
-              post[0].sub.ImageUrn &&
-              post[0].sub.ImageUrn[0] &&
-              post[0].sub.ImageUrn[0].url ? (
-                <div className="w-8 h-8 mr-2 overflow-hidden rounded-full">
-                  <Image
-                    src={`http://localhost:1337${post[0].sub.ImageUrn[0].url}`}
-                    height={(8 * 16) / 4}
-                    width={(8 * 16) / 4}
-                  ></Image>
-                </div>
-              ) : (
-                <div>
-                  <img
-                    className="w-8 h-8 mr-2 overflow-hidden rounded-full"
-                    src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
-                  ></img>
-                </div>
-              )}
-              <p className="text-xl font-bold text-white">{sub}</p>
+      {post && post[0] ? (
+        <Link href={`/r/${post[0].subName}`}>
+          <a>
+            <div className="flex items-center w-full h-20 p-8 bg-blue-500">
+              <div className="container flex">
+                {post &&
+                post[0] &&
+                post[0].sub &&
+                post[0].sub.ImageUrn &&
+                post[0].sub.ImageUrn[0] &&
+                post[0].sub.ImageUrn[0].url ? (
+                  <div className="w-8 h-8 mr-2 overflow-hidden rounded-full">
+                    <Image
+                      src={`http://localhost:1337${post[0].sub.ImageUrn[0].url}`}
+                      height={(8 * 16) / 4}
+                      width={(8 * 16) / 4}
+                    ></Image>
+                  </div>
+                ) : (
+                  <div>
+                    <img
+                      className="w-8 h-8 mr-2 overflow-hidden rounded-full"
+                      src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                    ></img>
+                  </div>
+                )}
+                <p className="text-xl font-bold text-white">{sub}</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </Link>
+          </a>
+        </Link>
+      ) : (
+        ``
+      )}
       <div className="container flex pt-5">
         {/* post */}
-        <div className="w-160">
+        <div className="w-200">
           <div className="bg-white rounded">
             {post && (
               <>
@@ -142,9 +147,15 @@ function PostPage({
                     <div className="flex items-center">
                       <p className="text-xs text-gray-500">
                         Posted by
-                        <Link href={`/u/${username}`}>
-                          <a className="mx-1 hover:underline">/u/{username}</a>
-                        </Link>
+                        {post && post[0] ? (
+                          <Link href={`/r/${post[0].subName}`}>
+                            <a className="mx-1 hover:underline">
+                              {post[0].subName}
+                            </a>
+                          </Link>
+                        ) : (
+                          ""
+                        )}
                         <Link href={`/r/${subName}/${identifier}/${slug}`}>
                           <a className="mx-1 hover:underline">
                             {dayjs(created_at).fromNow()}
@@ -161,16 +172,16 @@ function PostPage({
                       {post && post[0] ? post[0].body : <>No content</>}
                     </p>
                     <div className="flex">
-                      <Link href="/">
-                        <a>
-                          <ActionButton>
-                            <i className="mr-1 fas fa-comment-alt fa-xs"></i>
-                            <span className="font-bold">
-                              {commentCount} comments
-                            </span>
-                          </ActionButton>
-                        </a>
-                      </Link>
+                      {/* <Link href="/"> */}
+                      <a>
+                        <ActionButton>
+                          <i className="mr-1 fas fa-comment-alt fa-xs"></i>
+                          <span className="font-bold">
+                            {commentCount} comments
+                          </span>
+                        </ActionButton>
+                      </a>
+                      {/* </Link> */}
                       <ActionButton>
                         <i className="mr-1 fas fa-share fa-xs"></i>
                         <span className="font-bold">Share</span>
@@ -189,7 +200,7 @@ function PostPage({
                       <div>
                         <p className="mb-1 text-xs">
                           Comment as{" "}
-                          <Link href="/">
+                          <Link href={`/r/${isLoggedIn.username}`}>
                             <a className="font-semibold text-blue-500">
                               {isLoggedIn.username}
                             </a>
@@ -223,7 +234,7 @@ function PostPage({
                             </a>
                           </Link>
                           <Link href="/register">
-                            <a className="px-4 py-1 blue button">Logout</a>
+                            <a className="px-4 py-1 blue button">Sign up</a>
                           </Link>
                         </div>
                       </div>
@@ -276,7 +287,7 @@ function PostPage({
                       </div>
                     ))
                   ) : (
-                    <h1>Hello</h1>
+                    <h1>No comments posted</h1>
                   )}
                 </div>
               </>
