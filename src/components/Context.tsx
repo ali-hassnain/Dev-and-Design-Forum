@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, createContext } from "react";
-import Axios from "axios";
+import axios from "axios";
 import { useRouter } from "next/router";
 
 const AppContext = createContext({
@@ -52,7 +52,7 @@ const AppProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       const checkLogin = async () => {
-        const response = await Axios.get("http://localhost:1337/users/me", {
+        const response = await axios.get("http://localhost:1337/users/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
